@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Случайное время и дата</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #000;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .container {
+            background-color: #000;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #00ff00;
+            padding: 40px;
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+            color: #00ff00;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .datetime-container {
+            margin: 30px 0;
+        }
+        
+        .date {
+            font-size: 2.2rem;
+            color: #00ff00;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .time {
+            font-size: 3.5rem;
+            color: #00ff00;
+            font-weight: 800;
+            text-shadow: 0 0 15px #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .blink {
+            animation: blink 0.3s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.2;
+        }
+        
+        .decoration:nth-child(1) {
+            top: -60px;
+            left: -60px;
+            animation: float 12s infinite ease-in-out;
+        }
+        
+        .decoration:nth-child(2) {
+            bottom: -70px;
+            right: -70px;
+            animation: float 15s infinite ease-in-out reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(8px, 12px) rotate(5deg); }
+            50% { transform: translate(-4px, 16px) rotate(-5deg); }
+            75% { transform: translate(-8px, 4px) rotate(3deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="decoration"></div>
+    <div class="decoration"></div>
+    
+    <div class="container">
+        <div class="datetime-container">
+            <div class="date" id="dateDisplay">19 НОЯБРЯ 2023</div>
+            <div class="time" id="timeDisplay">14:25:36</div>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const dateDisplay = document.getElementById('dateDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        
+        // Месяцы на русском и английском
+        const monthsRU = [
+            'ЯНВАРЯ', 'ФЕВРАЛЯ', 'МАРТА', 'АПРЕЛЯ', 'МАЯ', 'ИЮНЯ',
+            'ИЮЛЯ', 'АВГУСТА', 'СЕНТЯБРЯ', 'ОКТЯБРЯ', 'НОЯБРЯ', 'ДЕКАБРЯ'
+        ];
+        
+        const monthsEN = [
+            'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+            'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+        ];
+        
+        // Переменная для отслеживания языка
+        let isEnglish = false;
+        
+        // Функция для получения случайного числа в диапазоне
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        // Функция для добавления ведущего нуля
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+        
+        // Генерация случайной даты и времени
+        function generateRandomDateTime() {
+            // Случайный год между 2000 и 2030
+            const year = getRandomInt(2000, 2030);
+            
+            // Случайный месяц (1-12)
+            const month = getRandomInt(1, 12);
+            
+            // Случайный день с учетом количества дней в месяце
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const day = getRandomInt(1, daysInMonth);
+            
+            // Случайное время
+            const hours = padZero(getRandomInt(0, 23));
+            const minutes = padZero(getRandomInt(0, 59));
+            const seconds = padZero(getRandomInt(0, 59));
+            
+            // Переключаем язык при каждом обновлении
+            isEnglish = !isEnglish;
+            
+            // Форматирование даты в зависимости от языка
+            const monthName = isEnglish ? monthsEN[month-1] : monthsRU[month-1];
+            const dateStr = `${day} ${monthName} ${year}`;
+            
+            // Форматирование времени
+            const timeStr = `${hours}:${minutes}:${seconds}`;
+            
+            // Обновление отображения
+            dateDisplay.textContent = dateStr;
+            timeDisplay.textContent = timeStr;
+            
+            // Добавляем мигающий эффект
+            timeDisplay.classList.add('blink');
+            setTimeout(() => {
+                timeDisplay.classList.remove('blink');
+            }, 150);
+        }
+        
+        // Запускаем автообновление каждые 0.3 секунды
+        setInterval(generateRandomDateTime, 300);
+        
+        // Инициализация при загрузке
+        generateRandomDateTime();
+    </script>
+</body>
+</html>
